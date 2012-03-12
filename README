@@ -1,0 +1,58 @@
+=== BUSFS ===
+
+BusFS is intended to be an IPC method using files in the unix way of doing
+things.
+
+The basic design principle is to maintain a ringbuffer for each 'file'.
+The ringbuffer will contain a log of 'datagrams' or 'messages' of a
+set size (or up to a set size). The messages are implicitly delimited
+by newlines (0xa), but an option to change the delimiter or to set
+a message length in advanced may be provided.
+
+Why another messaging/IPC system? Two answers:
+
+1) Simplicity:
+    While other IPC systems may be higher performance, they often require
+    the using of special APIs to accomplish these goals. Thus in order to
+    make a specific process use an IPC system, it needs to be rewritten
+    or wrapped to that effect.
+
+    BusFS operates using standard read(2) and write(2) system calls. This
+    means that it's possible to create a 'message queue' using things as
+    simple as shell scripting.
+
+2) Deployment:
+    There is no need for a socket server or a specific daemon to be running.
+    The filesystem need only be 'mounted', and normal operation can commence.
+    As long as your platform can run fuse (and glib), it can run BusFS.
+
+== BUILDING ==
+
+BusFS requires FUSE 2.6 or greater, and glib. You should have the development
+packages installed for those libraries.
+
+BusFS currently requires a real-filesytem backing to maintain directory
+structure. So you should probably modify the Makefile and change the
+PATHDEFINES variables to your liking.
+
+Once the variables have been put into place you can do:
+
+    make
+    make run
+
+where 'make run' will mount the filesystem in the 'mountpoint' directory
+of the source directory
+
+=== BUGS ===
+
+I've spent very little time writing, so this is just a list of bugs
+I've recognized while writing (and there are probably more).
+
+- Will leak memory - not for production use (yet).
+
+- reading from a new file will return ERANGE the first time
+
+- Sending a SIGINT to the main process will hang the filesystem
+    if there is another process in middle of an I/O operation
+
+
