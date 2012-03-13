@@ -21,7 +21,7 @@ LDFLAGS=$(shell pkg-config fuse --libs) \
 
 all: busfs
 
-OBJECTS=busfs.o fops.o boilerplate.o
+OBJECTS=busfs.o busfs_read.o busfs_write.o fops.o boilerplate.o
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) -o $@ $^
@@ -34,4 +34,7 @@ clean:
 
 run: busfs
 	- fusermount -u $(MOUNTPOINT)
-	./busfs -f -o intr -d $(MOUNTPOINT)
+	./busfs -f -o intr -o nonempty -d $(MOUNTPOINT)
+
+check: busfs
+	bash runtests.sh $(MOUNTPOINT)

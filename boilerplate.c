@@ -40,9 +40,9 @@ int busfs_op_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     DIR *dp;
     struct dirent *de;
     BUSFS_CONVERT_PATH(path);
-    LOG_MSG("Readdir requested on %s", path);
     (void) offset;
     (void) fi;
+
     dp = opendir(path);
     if (dp == NULL)
         return -errno;
@@ -76,17 +76,6 @@ int busfs_op_mkdir(const char *path, mode_t mode)
     return 0;
 }
 
-int busfs_op_unlink(const char *path)
-{
-    int res;
-    BUSFS_CONVERT_PATH(path);
-    res = unlink(path);
-    if (res == -1)
-        return -errno;
-
-    return 0;
-}
-
 int busfs_op_rmdir(const char *path)
 {
     int res;
@@ -110,29 +99,6 @@ int busfs_op_symlink(const char *from, const char *to)
     return 0;
 }
 
-int busfs_op_rename(const char *from, const char *to)
-{
-    int res;
-    BUSFS_CONVERT_PATH(to);
-    res = rename(from, to);
-    if (res == -1)
-        return -errno;
-
-    return 0;
-}
-
-int busfs_op_link(const char *from, const char *to)
-{
-    int res;
-    BUSFS_CONVERT_PATH(from);
-    BUSFS_CONVERT_PATH(to);
-
-    res = link(from, to);
-    if (res == -1)
-        return -errno;
-
-    return 0;
-}
 
 int busfs_op_chmod(const char *path, mode_t mode)
 {
@@ -158,12 +124,8 @@ int busfs_op_chown(const char *path, uid_t uid, gid_t gid)
 
 int busfs_op_truncate(const char *path, off_t size)
 {
-    int res;
-    BUSFS_CONVERT_PATH(path);
-    res = truncate(path, size);
-    if (res == -1)
-        return -errno;
-
+    (void)path;
+    (void)size;
     return 0;
 }
 
@@ -189,7 +151,6 @@ int busfs_op_fsync(const char *path, int isdatasync,
 {
     /* Just a stub.  This method is optional and can safely be left
        unimplemented */
-    BUSFS_CONVERT_PATH(path);
     (void) path;
     (void) isdatasync;
     (void) fi;
